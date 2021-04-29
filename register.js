@@ -22,24 +22,27 @@ const fill = async (page, selector, fillValue) => {
     fillValue
   );
 };
-(async () => {
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
-  await page.goto("https://trabajador.relojcontrol.com/");
-
-  await fill(page, inputRut, rut);
-  await fill(page, inputPass, password);
-
-  const button = await page.waitFor(enterButton);
+const clickButton = async (page, selector) => {
+  const button = await page.waitFor(selector);
   await page.click(button._remoteObject.description);
+};
+(async () => {
+  try {
+    const browser = await puppeteer.launch({ headless: false });
+    const page = await browser.newPage();
+    await page.goto("https://trabajador.relojcontrol.com/");
 
-  const registerButton = await page.waitFor(registerButtonPath);
-  await page.click(registerButton._remoteObject.description);
-  const confirmButton = await page.waitFor(confirmButtonPath);
-  await page.click(confirmButton._remoteObject.description);
-  const okButton = await page.waitFor(okButtonPath);
-  await page.click(okButton._remoteObject.description);
-  await page.screenshot({ path: "entrada.png" });
+    await fill(page, inputRut, rut);
+    await fill(page, inputPass, password);
 
-  await browser.close();
+    await clickButton(page, enterButton);
+    await clickButton(page, registerButtonPath);
+    await clickButton(page, confirmButtonPath);
+    await clickButton(page, okButtonPath);
+    await page.screenshot({ path: "entrada.png" });
+
+    await browser.close();
+  } catch (error) {
+    await browser.close();
+  }
 })();

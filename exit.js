@@ -1,5 +1,8 @@
 const puppeteer = require("puppeteer");
 
+const dotenv = require("dotenv");
+dotenv.config();
+
 const rut = process.env.RUT;
 const password = process.env.PASSWORD;
 const enterButton = '[class = "btn btn-blue btn-block z-a"]';
@@ -21,23 +24,27 @@ const fill = async (page, selector, fillValue) => {
   );
 };
 (async () => {
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
-  await page.goto("https://trabajador.relojcontrol.com/");
+  try {
+    const browser = await puppeteer.launch({ headless: false });
+    const page = await browser.newPage();
+    await page.goto("https://trabajador.relojcontrol.com/");
 
-  await fill(page, inputRut, rut);
-  await fill(page, inputPass, password);
+    await fill(page, inputRut, rut);
+    await fill(page, inputPass, password);
 
-  const button = await page.waitFor(enterButton);
-  await page.click(button._remoteObject.description);
+    const button = await page.waitFor(enterButton);
+    await page.click(button._remoteObject.description);
 
-  const registerButton = await page.waitFor(registerButtonPath);
-  await page.click(registerButton._remoteObject.description);
-  const confirmButton = await page.waitFor(confirmButtonPath);
-  await page.click(confirmButton._remoteObject.description);
-  const okButton = await page.waitFor(okButtonPath);
-  await page.click(okButton._remoteObject.description);
-  await page.screenshot({ path: "salida.png" });
+    const registerButton = await page.waitFor(registerButtonPath);
+    await page.click(registerButton._remoteObject.description);
+    const confirmButton = await page.waitFor(confirmButtonPath);
+    await page.click(confirmButton._remoteObject.description);
+    const okButton = await page.waitFor(okButtonPath);
+    await page.click(okButton._remoteObject.description);
+    await page.screenshot({ path: "salida.png" });
 
-  await browser.close();
+    await browser.close();
+  } catch (error) {
+    await browser.close();
+  }
 })();
